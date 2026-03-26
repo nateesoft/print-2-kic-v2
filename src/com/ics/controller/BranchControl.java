@@ -11,18 +11,6 @@ public class BranchControl {
     static MySQLConnect mysql = new MySQLConnect();
     private static BranchBean branchBean = null;
 
-    public static void updateKicItemNo() {
-        try {
-            mysql.open();
-            String sql = "update branch set KicItemNo=KicItemNo+1";
-            mysql.getConnection().createStatement().executeUpdate(sql);
-        } catch (SQLException e) {
-            System.err.println(e.getMessage());
-        } finally {
-            mysql.close();
-        }
-    }
-
     public static BranchBean getData() {
         if (branchBean != null) {
             return branchBean;
@@ -151,14 +139,19 @@ public class BranchControl {
     }
 
     public static String[] getKicData20() {
-        String[] kic;
-        kic = new String[]{
+        // Fix: ป้องกัน NPE ถ้า getData() ยังไม่ถูกเรียก หรือ DB query ล้มเหลว
+        if (branchBean == null) {
+            branchBean = getData();
+        }
+        if (branchBean == null) {
+            return new String[20]; // คืน array ว่างเพื่อไม่ให้ crash
+        }
+        return new String[]{
             branchBean.getKIC1(), branchBean.getKIC2(), branchBean.getKIC3(), branchBean.getKIC4(), branchBean.getKIC5(),
             branchBean.getKIC6(), branchBean.getKIC7(), branchBean.getKIC8(), branchBean.getKIC9(), branchBean.getKIC10(),
             branchBean.getKIC11(), branchBean.getKIC12(), branchBean.getKIC13(), branchBean.getKIC14(), branchBean.getKIC15(),
             branchBean.getKIC16(), branchBean.getKIC17(), branchBean.getKIC18(), branchBean.getKIC19(), branchBean.getKIC20()
         };
-        return kic;
     }
 
     public static String getForm(String kicNo) {

@@ -16,19 +16,25 @@ import com.ics.process.MySQLConnect;
 public class PrintToKicController extends DatabaseConnection {
 
     private final MySQLConnect mysqlLocal = new MySQLConnect();
+    private final String PDA_TRAN_TYPE = "PDA";
 
     public BalanceBean getBalaneForPDA() {
         BalanceBean bean = null;
 
         mysqlLocal.open();
         try {
-            String sql = "select r_table,macno,"
-                    + "sum(b.r_quan) qty,sum(b.r_total) total from balance b "
-                    + "where trantype='PDA' "
-                    + "and r_kicprint<>'P' and r_void<>'V' "
-                    + "and r_kic<>'0' and r_printOK='Y' and r_pause='P' "
-                    + "group by r_table order by r_etd,r_index;";
-            System.out.println(sql);
+            String sql = "select r_table, macno, r_etd, r_index,"
+                    + "sum(b.r_quan) qty,"
+                    + "sum(b.r_total) total "
+                    + "from balance b "
+                    + "where trantype='" + PDA_TRAN_TYPE + "' "
+                    + "  and r_kicprint<>'P' "
+                    + "  and r_void<>'V' "
+                    + "  and r_kic<>'0' "
+                    + "  and r_printOK='Y' "
+                    + "  and r_pause='P' "
+                    + "group by r_table, macno, r_etd, r_index "
+                    + "order by r_etd, r_index";
             try (ResultSet rs = mysqlLocal.getConnection().createStatement().executeQuery(sql)) {
                 if (rs.next()) {
                     PrintToKic.kicPrintting = true;
@@ -98,13 +104,12 @@ public class PrintToKicController extends DatabaseConnection {
                     + "and R_kic='" + rKic + "' "
                     + "group by r_plucode";
             try (ResultSet rs = mysqlLocal.getConnection().createStatement().executeQuery(sql)) {
-                if (rs.next()) {
+                while (rs.next()) { // Fix: เปลี่ยนจาก if → while เพื่อดึงทุกเมนูที่ส่งครัวนั้น
                     BalanceBean bean = new BalanceBean();
                     bean.setR_PluCode(rs.getString("R_PluCode"));
 
                     listBalance.add(bean);
                 }
-                rs.close();
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -128,7 +133,7 @@ public class PrintToKicController extends DatabaseConnection {
                     + "and R_Void<>'V' "
                     + "and R_Kic='" + rKic + "'";
             try (ResultSet rs = mysqlLocal.getConnection().createStatement().executeQuery(sql)) {
-                if (rs.next()) {
+                while (rs.next()) { // Fix: เปลี่ยนจาก if → while เพื่อดึงทุกเมนูที่ส่งครัวนั้น
                     BalanceBean bean = new BalanceBean();
                     bean.setR_PluCode(rs.getString("R_PluCode"));
                     bean.setR_Quan(rs.getDouble("R_Quan"));
@@ -137,7 +142,6 @@ public class PrintToKicController extends DatabaseConnection {
 
                     listBalance.add(bean);
                 }
-                rs.close();
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());

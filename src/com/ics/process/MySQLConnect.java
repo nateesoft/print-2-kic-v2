@@ -1,7 +1,6 @@
 package com.ics.process;
 
 import com.ics.constant.Value;
-import com.ics.util.AppLogUtil;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -101,24 +100,6 @@ public class MySQLConnect {
         this.msgError = msgError;
     }
 
-    public void open(Class clazz) {
-        this.clazz = clazz;
-        if (!MySQLConstants.MYSQL_CONNECT.isEmpty()) {
-            closeConnection(clazz);
-        }
-
-        if (con == null) {
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                con = DriverManager.getConnection("jdbc:mysql://" + HostName + ":" + PortNumber + "/" + DbName + "?characterEncoding=utf-8", UserName, Password);
-                MySQLConstants.MYSQL_CONNECT.put(con.hashCode(), this.clazz);
-            } catch (ClassNotFoundException | SQLException e) {
-                System.err.println(e.getMessage());
-                System.exit(0);
-            }
-        }
-    }
-
     public void open() {
         try {
             close();
@@ -126,7 +107,7 @@ public class MySQLConnect {
         } catch (InterruptedException e) {
         }
         if (!MySQLConstants.MYSQL_CONNECT.isEmpty()) {
-            closeConnection(clazz);
+            close();
         }
 
         if (con == null) {
@@ -152,26 +133,50 @@ public class MySQLConnect {
                 MySQLConstants.MYSQL_CONNECT.remove(con.hashCode());
             } catch (SQLException ex) {
                 Logger.getLogger(MySQLConnect.class.getName()).log(Level.SEVERE, null, ex);
-                AppLogUtil.log(MySQLConnect.class, "error", ex);
+            } finally {
+                con = null; // Fix: reset เสมอ เพื่อให้ open() สามารถเปิด connection ใหม่ได้ถูกต้อง
             }
-
         }
-
     }
 
-    public void closeConnection(Class clazz) {
-        this.clazz = clazz;
-        if (!MySQLConstants.MYSQL_CONNECT.isEmpty()) {
-            if (con != null) {
-                try {
-                    con.close();
-                    MySQLConstants.MYSQL_CONNECT.remove(con.hashCode());
-                } catch (SQLException ex) {
-                    Logger.getLogger(MySQLConnect.class.getName()).log(Level.SEVERE, null, ex);
-                    AppLogUtil.log(MySQLConnect.class, "error", ex);
-                }
+    /**
+     * ตรวจสอบว่า connection ปัจจุบันยังใช้งานได้อยู่หรือไม่
+     * ใช้ isValid() ของ JDBC ซึ่งส่ง ping ไปยัง DB จริง (timeout 2 วินาที)
+     * @return 
+     */
+    public boolean isAlive() {
+        if (con == null) {
+            return false;
+        }
+        try {
+            return !con.isClosed() && con.isValid(2);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 
+    /**
+     * พยายาม connect ใหม่โดยไม่เรียก System.exit() เมื่อล้มเหลว
+     * คืนค่า true ถ้า connect สำเร็จ, false ถ้าล้มเหลว
+     * ใช้ใน loop หลักเพื่อตรวจสอบ DB ก่อนดำเนินการอื่น
+     * @return 
+     */
+    public boolean tryOpen() {
+        try {
+            if (!MySQLConstants.MYSQL_CONNECT.isEmpty()) {
+                close();
             }
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection(
+                "jdbc:mysql://" + HostName + ":" + PortNumber + "/" + DbName + "?characterEncoding=utf-8",
+                UserName, Password
+            );
+            MySQLConstants.MYSQL_CONNECT.put(con.hashCode(), clazz);
+            return true;
+        } catch (ClassNotFoundException | SQLException e) {
+            System.err.println("DB tryOpen failed: " + e.getMessage());
+            con = null;
+            return false;
         }
     }
 

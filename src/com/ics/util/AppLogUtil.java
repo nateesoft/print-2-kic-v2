@@ -39,15 +39,18 @@ public class AppLogUtil {
             int lineNumber = e.getStackTrace()[0].getLineNumber();
 
             switch (type) {
-                case "error" ->
+                case "error" :
                     logger.log(Level.SEVERE, "{0}:{1}:{2}", new Object[]{msg, t.getName(), lineNumber});
-                case "warning" -> {
+                    break;
+                case "warning" : {
                     logger.log(Level.WARNING, "{0}:{1}:{2}", new Object[]{msg, t.getName(), lineNumber});
                     logger.warning(msg);
+                    break;
                 }
-                default -> {
+                default : {
                     logger.log(Level.INFO, "{0}:{1}:{2}", new Object[]{msg, t.getName(), lineNumber});
                     logger.info(msg);
+                    break;
                 }
             }
         }

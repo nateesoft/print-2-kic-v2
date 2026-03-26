@@ -2,6 +2,9 @@ package com.ics.main.ui;
 
 import java.awt.Cursor;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import com.ics.model.BalanceBean;
@@ -12,6 +15,7 @@ import com.ics.process.PrintSimpleForm;
 import com.ics.controller.PrintToKicController;
 import com.ics.constant.PublicVar;
 import com.ics.constant.Value;
+import com.ics.process.MySQLConnect;
 
 /**
  *
@@ -19,9 +23,14 @@ import com.ics.constant.Value;
  */
 public class PrintToKic extends javax.swing.JFrame {
 
-    public static boolean kicPrintting = false;
+    public static volatile boolean kicPrintting = false;
     private boolean printkic = false;
     private final PrintToKicController control = new PrintToKicController();
+    private final MySQLConnect dbHealthCheck = new MySQLConnect();
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+    private static final int INITIAL_DELAY_SECONDS = 5;
+    private static final int POLL_INTERVAL_SECONDS = 30;
 
     /**
      * Creates new form PrintToKic
@@ -32,34 +41,17 @@ public class PrintToKic extends javax.swing.JFrame {
     public PrintToKic(java.awt.Frame parent, boolean modal) {
         initComponents();
 
-        new Thread(() -> {
-            BranchBean branchBean = BranchControl.getData();
-            String config = branchBean.getSaveOrder();
-            lblProcessLog.setText("Log! : ");
-            if (!config.equals("N")) {
-                PublicVar.Branch_Saveorder = config;
-            }
-
-            printkic = Boolean.parseBoolean(ConfigFile.getProperties("printkic"));
-            lblProcessShow.setText("สถานะการพิมพ์");
-            setState(JFrame.ICONIFIED);
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-            }
-
-            if (printkic == true) {
-                while (kicPrintting != true) {
-                    kicPrintFromPDA();
-                    try {
-                        Thread.sleep(3 * 1000);
-                    } catch (InterruptedException e) {
-                    }
-                }
-            }
-        }).start();
+        printkic = Boolean.parseBoolean(ConfigFile.getProperties("printkic"));
+        if (printkic) {
+            // scheduleWithFixedDelay: รอ 30 วินาทีหลัง task เสร็จจึงทำรอบถัดไป
+            // ป้องกันการ overlap กรณีพิมพ์นาน
+            scheduler.scheduleWithFixedDelay(
+                    this::processTricker,
+                    INITIAL_DELAY_SECONDS,
+                    POLL_INTERVAL_SECONDS,
+                    TimeUnit.SECONDS
+            );
+        }
     }
 
     private void loadStatus() {
@@ -102,12 +94,12 @@ public class PrintToKic extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         pbCheckUpdate = new javax.swing.JProgressBar();
         jLabel2 = new javax.swing.JLabel();
+        lblProcessShow = new javax.swing.JLabel();
+        lblProcessLog = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        lblProcessShow = new javax.swing.JLabel();
-        lblProcessLog = new javax.swing.JLabel();
 
         setTitle("Print To Kic @Softpos");
         setUndecorated(true);
@@ -118,13 +110,49 @@ public class PrintToKic extends javax.swing.JFrame {
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Print_Button.jpg"))); // NOI18N
 
+        lblProcessShow.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblProcessShow.setText("lblProcessShow");
+
+        lblProcessLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblProcessLog.setText("lblProcessLog");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblProcessLog, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(pbCheckUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 699, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(lblProcessShow, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 253, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pbCheckUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblProcessShow, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblProcessLog, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
         jPanel2.setBackground(new java.awt.Color(102, 102, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("PROCESSING: PDA-Document @ Softpos Java 10:14 20220331");
+        jLabel1.setText("PROCESSING: PDA-Tricker @ ICS Java 10:14 20260324");
 
         jButton1.setBackground(new java.awt.Color(204, 0, 0));
         jButton1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
@@ -170,62 +198,21 @@ public class PrintToKic extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        lblProcessShow.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        lblProcessShow.setText("jLabel3");
-
-        lblProcessLog.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        lblProcessLog.setText("jLabel3");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addComponent(pbCheckUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 699, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(lblProcessShow, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(lblProcessLog, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pbCheckUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblProcessShow, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblProcessLog, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -233,16 +220,17 @@ public class PrintToKic extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        setState(JFrame.ICONIFIED);
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         int rs = JOptionPane.showConfirmDialog(this, "ต้องการออกจากโปรแกรม Print PDA หรือไม่", "Confirm Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null);
         if (rs == JOptionPane.YES_OPTION) {
+            scheduler.shutdownNow();
             System.exit(0);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        setState(JFrame.ICONIFIED);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void kicPrintFromPDA() {
         if (kicPrintting == false) {
@@ -260,95 +248,86 @@ public class PrintToKic extends javax.swing.JFrame {
 
     private void kichenPrint(String tableNo, String macno) {
         PrintSimpleForm printSimpleForm = new PrintSimpleForm();
-        String printerName;
-        String[] kicMaster = BranchControl.getKicData20();
-        // หาจำนวนปริ้นเตอร์ว่าต้องออกกี่เครื่อง
-        List<BalanceBean> listBalance = control.getBalaneForPDAByTableNo(tableNo, macno);
 
-        //วนคำสั่งเพื่อพิมพ์ให้ครบทุกครัว
-        for (BalanceBean balanceBean : listBalance) {
-            kicPrintting = true;
-            loadStatus();
-            String rKic = balanceBean.getR_Kic();
-            lblProcessShow.setText("กำลังพิมพ์ข้อมูล โต๊ะ : " + tableNo + " KIC : " + rKic + " สั่งจากเครื่อง : " + macno);
-            if (!rKic.equals("")) {
-                int iKic = Integer.parseInt(rKic);
-                if (iKic - 1 < 0) {
-                    //ถ้าเป็น iKic=0 จะเป็นการไม่กำหนดให้ปริ้นออกครัว
-                } else {
-                    if (kicMaster[iKic - 1].equals("N")) {
-                        //NOT PRINT or Print already
-                    } else {
-                        printerName = "kic" + rKic;
-                        String printerForm = BranchControl.getForm(rKic);
-                        switch (printerForm) {
-                            case "1":
-                                List<BalanceBean> listForm1 = control.getBalancePrintForm1(tableNo, rKic);
-                                printerName = "kic" + rKic;
-                                for (BalanceBean bean : listForm1) {
-                                    String PCode = bean.getR_PluCode();
-                                    if (printerForm.equals("1")) {
-                                        if (Value.printkic) {
-                                            kicPrintting = true;
-                                            printSimpleForm.KIC_FORM_1(printerName, tableNo, new String[]{PCode});
-                                        }
-                                    }
-                                }
-                                break;
-                            case "6":
-                                List<BalanceBean> listForm6 = control.getBalancePrintForm6(tableNo, rKic);
-                                for (BalanceBean bean : listForm6) {
-                                    kicPrintting = true;
-                                    if (Value.printkic) {
-                                        double qty = bean.getR_Quan();
-                                        double total = bean.getR_Total();
-                                        String r_plucode = bean.getR_PluCode();
-                                        String R_Index = bean.getR_Index();
-                                        printSimpleForm.KIC_FORM_6(printerName, tableNo, R_Index, r_plucode, qty, total);
-                                    }
-                                }
-                                break;
-                            case "3":
-                            case "4":
-                            case "5":
-                                if (printerForm.equals("3")) {
-                                    if (Value.printkic) {
-                                        kicPrintting = true;
-                                        String retd = balanceBean.getR_ETD();
-                                        printSimpleForm.KIC_FORM_3New(printerName, tableNo, iKic, retd, "PDA", macno);
-                                    }
-                                } else if (printerForm.equals("4")) {
-                                    if (Value.printkic) {
-                                        printSimpleForm.KIC_FORM_4(printerName, tableNo);
-                                    }
-                                } else if (printerForm.equals("5")) {
-                                    if (Value.printkic) {
-                                        printSimpleForm.KIC_FORM_5(printerName, tableNo);
-                                    }
-                                }
-                                break;
-                            case "7":
-                                if (Value.printkic) {
-                                    printSimpleForm.KIC_FORM_7(printerName, tableNo);//print new Jasperfile
-                                }
-                            case "8":
-                                if (Value.printkic) {
-                                    printSimpleForm.KIC_FORM_8Qrcode(printerName, tableNo, balanceBean.getR_ETD());//print new Jasperfile
-                                }
-                                break;
-                            case "2":
-                                if (Value.printkic) {
-                                    printSimpleForm.KIC_FORM_7(printerName, tableNo);//print new Jasperfile
-                                }
-                                break;
-                            default:
-                                System.err.println("ไม่พบฟอร์มปริ้นเตอร์ครัวในระบบที่สามารใช้งานได้ !!!");
-                                break;
+        if (Value.printkic) {
+            String[] kicMaster = BranchControl.getKicData20();
+            List<BalanceBean> listBalance = control.getBalaneForPDAByTableNo(tableNo, macno);
+            for (BalanceBean balanceBean : listBalance) {
+                kicPrintting = true;
+                loadStatus();
+                String rKic = balanceBean.getR_Kic();
+                lblProcessShow.setText("กำลังพิมพ์ข้อมูล โต๊ะ : " + tableNo + " KIC : " + rKic + " สั่งจากเครื่อง : " + macno);
+
+                // Fix #4: null/empty check ก่อนใช้งาน rKic
+                if (rKic == null || rKic.isEmpty()) {
+                    continue;
+                }
+
+                int iKic;
+                try {
+                    // Fix #3: ป้องกัน NumberFormatException ถ้า rKic ไม่ใช่ตัวเลข
+                    iKic = Integer.parseInt(rKic);
+                } catch (NumberFormatException e) {
+                    System.err.println("rKic ไม่ใช่ตัวเลขที่ถูกต้อง: " + rKic);
+                    continue;
+                }
+
+                // Fix #2: check ทั้งขอบล่าง (<=0) และขอบบน (>20) ป้องกัน ArrayIndexOutOfBoundsException
+                if (iKic <= 0 || iKic > kicMaster.length) {
+                    continue;
+                }
+
+                if (kicMaster[iKic - 1].equals("N")) {
+                    // NOT PRINT or Print already
+                    continue;
+                }
+
+                String printerName = "kic" + rKic;
+                String printerForm = BranchControl.getForm(rKic);
+
+                // Fix #5: แยก case "3","4","5" ออกจากกัน ไม่ใช้ nested switch
+                switch (printerForm) {
+                    case "1":
+                        // Fix #6: ลบ if (printerForm.equals("1")) ที่ซ้ำซ้อน และ printerName ที่ assign ซ้ำ
+                        List<BalanceBean> listForm1 = control.getBalancePrintForm1(tableNo, rKic);
+                        for (BalanceBean bean : listForm1) {
+                            kicPrintting = true;
+                            printSimpleForm.KIC_FORM_1(printerName, tableNo, new String[]{bean.getR_PluCode()});
                         }
-                    }
+                        break;
+                    case "2":
+                        printSimpleForm.KIC_FORM_7(printerName, tableNo);
+                        break;
+                    case "3":
+                        kicPrintting = true;
+                        printSimpleForm.KIC_FORM_3New(printerName, tableNo, iKic, balanceBean.getR_ETD(), "PDA", macno);
+                        break;
+                    case "4":
+                        printSimpleForm.KIC_FORM_4(printerName, tableNo);
+                        break;
+                    case "5":
+                        printSimpleForm.KIC_FORM_5(printerName, tableNo);
+                        break;
+                    case "6":
+                        List<BalanceBean> listForm6 = control.getBalancePrintForm6(tableNo, rKic);
+                        for (BalanceBean bean : listForm6) {
+                            kicPrintting = true;
+                            printSimpleForm.KIC_FORM_6(printerName, tableNo, bean.getR_Index(), bean.getR_PluCode(), bean.getR_Quan(), bean.getR_Total());
+                        }
+                        break;
+                    case "7":
+                        printSimpleForm.KIC_FORM_7(printerName, tableNo);
+                        break; // Fix #1: เพิ่ม break ป้องกัน fall-through ไป case "8"
+                    case "8":
+                        printSimpleForm.KIC_FORM_8Qrcode(printerName, tableNo, balanceBean.getR_ETD());
+                        break;
+                    default:
+                        System.err.println("ไม่พบฟอร์มปริ้นเตอร์ครัวในระบบที่สามารใช้งานได้ !!!");
+                        break;
                 }
             }
         }
+
         if (!PublicVar.Branch_Saveorder.equals("N")) {
             printSimpleForm.KIC_FORM_SaveOrder("", "SaveOrder", tableNo, 0);
         }
@@ -381,4 +360,42 @@ public class PrintToKic extends javax.swing.JFrame {
     private javax.swing.JLabel lblProcessShow;
     private javax.swing.JProgressBar pbCheckUpdate;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * Task ที่ถูกเรียกโดย ScheduledExecutorService ทุก POLL_INTERVAL_SECONDS
+     * วินาที ตรวจสอบ DB connection ก่อน ถ้าพร้อมค่อยดึงคิวพิมพ์
+     */
+    private void processTricker() {
+        // 1. ตรวจสอบ DB connection ก่อนทุกครั้ง
+        boolean dbConnected = dbHealthCheck.tryOpen();
+        dbHealthCheck.close();
+
+        if (dbConnected) {
+            // 2. DB พร้อมใช้งาน → ดำเนินการตรวจสอบคิวพิมพ์
+            lblProcessShow.setText("เชื่อมต่อ Database สำเร็จ - ตรวจสอบคิวพิมพ์...");
+
+            BranchBean branchBean = BranchControl.getData();
+            // Fix: ป้องกัน NPE ถ้า getData() คืนค่า null (DB query ล้มเหลว)
+            if (branchBean == null) {
+                lblProcessShow.setText("ไม่สามารถโหลดข้อมูล Branch ได้ กำลังลองใหม่...");
+                lblProcessLog.setText("Log! : Branch data error");
+                return;
+            }
+
+            String config = branchBean.getSaveOrder();
+            lblProcessLog.setText("Log! : ");
+            if (!config.equals("N")) {
+                PublicVar.Branch_Saveorder = config;
+            }
+
+            setState(JFrame.ICONIFIED);
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+            kicPrintFromPDA();
+        } else {
+            // 3. DB ไม่พร้อม → แสดงสถานะและรอรอบถัดไปอัตโนมัติ
+            lblProcessShow.setText("ไม่สามารถเชื่อมต่อ Database ได้ กำลังลองใหม่...");
+            lblProcessLog.setText("Log! : DB connection error");
+        }
+    }
 }

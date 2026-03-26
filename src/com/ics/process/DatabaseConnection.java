@@ -8,17 +8,18 @@ import java.sql.SQLException;
  */
 public class DatabaseConnection {
 
+    private final MySQLConnect mysqlLocal = new MySQLConnect();
+
     public boolean execUpdate(String sql) {
         boolean isValid = false;
-        MySQLConnect mysql = new MySQLConnect();
-        mysql.open();
+        mysqlLocal.open();
         try {
-            int result = mysql.getConnection().createStatement().executeUpdate(sql);
+            int result = mysqlLocal.getConnection().createStatement().executeUpdate(sql);
             isValid = result > 0;
         } catch (SQLException e) {
             System.err.println(e.getMessage());
         } finally {
-            mysql.close();
+            mysqlLocal.close();
         }
 
         return isValid;
