@@ -15,7 +15,9 @@ import com.ics.process.PrintSimpleForm;
 import com.ics.controller.PrintToKicController;
 import com.ics.constant.PublicVar;
 import com.ics.constant.Value;
+import com.ics.model.RabbitMQOrderBean;
 import com.ics.process.MySQLConnect;
+import com.ics.process.RabbitMQConsumer;
 
 /**
  *
@@ -28,6 +30,7 @@ public class PrintToKic extends javax.swing.JFrame {
     private final PrintToKicController control = new PrintToKicController();
     private final MySQLConnect dbHealthCheck = new MySQLConnect();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private RabbitMQConsumer rabbitmqConsumer;
 
     private static final int INITIAL_DELAY_SECONDS = 5;
     private static final int POLL_INTERVAL_SECONDS = 30;
@@ -52,6 +55,11 @@ public class PrintToKic extends javax.swing.JFrame {
                     TimeUnit.SECONDS
             );
         }
+
+        if (Value.useRabbitmq) {
+            rabbitmqConsumer = new RabbitMQConsumer((tableNo, macno, rawMessage) -> displayDataFromRabbitMQ(rawMessage));
+            rabbitmqConsumer.start();
+        }
     }
 
     private void loadStatus() {
@@ -62,10 +70,6 @@ public class PrintToKic extends javax.swing.JFrame {
             for (int i = 1; i <= 100; i++) {
                 pbCheckUpdate.setValue(i);
                 pbCheckUpdate.setString("LOADDING Data: (" + i + " %)");
-                try {
-                    Thread.sleep(2);
-                } catch (InterruptedException e) {
-                }
             }
 
             pbCheckUpdate.setString("Load data Complete ");
@@ -73,10 +77,6 @@ public class PrintToKic extends javax.swing.JFrame {
             for (int i = 100; i >= 0; i--) {
                 pbCheckUpdate.setValue(i);
                 pbCheckUpdate.setString("LOADDING Data: (" + i + " %)");
-                try {
-                    Thread.sleep(2);
-                } catch (InterruptedException e) {
-                }
             }
         } catch (InterruptedException e) {
         }
@@ -224,6 +224,9 @@ public class PrintToKic extends javax.swing.JFrame {
         int rs = JOptionPane.showConfirmDialog(this, "ต้องการออกจากโปรแกรม Print PDA หรือไม่", "Confirm Dialog", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null);
         if (rs == JOptionPane.YES_OPTION) {
             scheduler.shutdownNow();
+            if (rabbitmqConsumer != null) {
+                rabbitmqConsumer.stop();
+            }
             System.exit(0);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -397,5 +400,37 @@ public class PrintToKic extends javax.swing.JFrame {
             lblProcessShow.setText("ไม่สามารถเชื่อมต่อ Database ได้ กำลังลองใหม่...");
             lblProcessLog.setText("Log! : DB connection error");
         }
+    }
+    
+    private void displayDataFromRabbitMQ(String rawMessage) {
+        System.out.println("Display data from rabbitMQ: ");
+
+        RabbitMQOrderBean orderBean = RabbitMQOrderBean.fromJson(rawMessage);
+
+        if (orderBean == null) {
+            System.err.println("RabbitMQ: mapping failed — rawMessage is null or empty");
+            lblProcessShow.setText("[RabbitMQ] Mapping failed: empty message");
+            return;
+        }
+
+        // แสดงผลบน UI
+        lblProcessShow.setText(String.format(
+            "[RabbitMQ] โต๊ะ: %s  Order: %s  สถานะ: %s",
+            orderBean.getTableNumber(),
+            orderBean.getOrderId(),
+            orderBean.getStatus()
+        ));
+        lblProcessLog.setText(String.format(
+            "ยอดรวม: %.2f  รายการ: %d  สาขา: %s",
+            orderBean.getTotalAmount(),
+            orderBean.getItemCount(),
+            orderBean.getBranchId()
+        ));
+
+        // แสดงผลบน console เพื่อ verify mapping ครบถ้วน
+        System.out.println(orderBean.toString());
+
+        // ดำเนินการพิมพ์ต่อ
+        processTricker();
     }
 }

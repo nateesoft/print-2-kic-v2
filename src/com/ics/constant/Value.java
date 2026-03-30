@@ -34,6 +34,18 @@ public class Value {
     public static boolean autoqty = false;
     public static boolean MemberAlready = false;
 
+    // RabbitMQ configuration
+    public static boolean useRabbitmq = false;
+    public static String rabbitmqHost = "localhost";
+    public static int rabbitmqPort = 5672;
+    public static String rabbitmqUser = "guest";
+    public static String rabbitmqPass = "guest";
+    public static String rabbitmqVhost = "/";
+    public static String rabbitmqQueue = "kic_print_queue";
+    // Exchange และ routing key ต้องตรงกับ food-ordering-service
+    public static String rabbitmqExchange = "food_ordering.events";
+    public static String rabbitmqRoutingKey = "order.created";
+
     public static String driverNotSupport = "ยังไม่ Support การพิมพ์ผ่าน Driver !";
     public static String EMP_CODE = "";
 

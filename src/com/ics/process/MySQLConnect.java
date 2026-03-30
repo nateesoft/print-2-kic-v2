@@ -23,7 +23,7 @@ public class MySQLConnect {
     public static String CharSet = "utf-8";
 
     private String msgError = "พบการเชื่อมต่อมีปัญหา ไม่สามารถดำเนินการต่อได้\nท่านต้องการปิดโปรแกรมอัตโนมัติหรือไม่ ?";
-    private Class clazz = null;
+    private final Class clazz = null;
 
     static {
         try {
@@ -82,6 +82,32 @@ public class MySQLConnect {
                     }
                 } else if (data[0].equalsIgnoreCase("printerName")) {
                     Value.printerDriverName = data[1];
+                } else if (data[0].equalsIgnoreCase("use_rabbitmq")) {
+                    try {
+                        Value.useRabbitmq = Boolean.parseBoolean(data[1]);
+                    } catch (Exception e) {
+                        Value.useRabbitmq = false;
+                    }
+                } else if (data[0].equalsIgnoreCase("rabbitmq_host")) {
+                    Value.rabbitmqHost = data[1];
+                } else if (data[0].equalsIgnoreCase("rabbitmq_port")) {
+                    try {
+                        Value.rabbitmqPort = Integer.parseInt(data[1]);
+                    } catch (NumberFormatException e) {
+                        Value.rabbitmqPort = 5672;
+                    }
+                } else if (data[0].equalsIgnoreCase("rabbitmq_user")) {
+                    Value.rabbitmqUser = data[1];
+                } else if (data[0].equalsIgnoreCase("rabbitmq_pass")) {
+                    Value.rabbitmqPass = data[1];
+                } else if (data[0].equalsIgnoreCase("rabbitmq_vhost")) {
+                    Value.rabbitmqVhost = data[1];
+                } else if (data[0].equalsIgnoreCase("rabbitmq_queue")) {
+                    Value.rabbitmqQueue = data[1];
+                } else if (data[0].equalsIgnoreCase("rabbitmq_exchange")) {
+                    Value.rabbitmqExchange = data[1];
+                } else if (data[0].equalsIgnoreCase("rabbitmq_routing_key")) {
+                    Value.rabbitmqRoutingKey = data[1];
                 }
             }
             br.close();
