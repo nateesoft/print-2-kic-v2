@@ -3,20 +3,16 @@ package com.ics.controller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import com.ics.model.CompanyBean;
 import com.ics.process.MySQLConnect;
 import com.ics.model.POSConfigSetup;
 import com.ics.model.POSHWSetup;
-import com.ics.model.PosUserBean;
 import com.ics.util.ThaiUtil;
 
 public class PosControl {
     private static final MySQLConnect mysql = new MySQLConnect();
 
-    private static CompanyBean companyBean = null;
     private static POSConfigSetup posConfigSetup = null;
     private static POSHWSetup poshwsetup = null;
-    private static PosUserBean posUser = null;
 
     public static POSConfigSetup getData() {
         if (posConfigSetup != null) {

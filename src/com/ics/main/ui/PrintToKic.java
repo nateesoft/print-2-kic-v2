@@ -15,6 +15,7 @@ import com.ics.process.PrintSimpleForm;
 import com.ics.controller.PrintToKicController;
 import com.ics.constant.PublicVar;
 import com.ics.constant.Value;
+import com.ics.controller.BalanceControl;
 import com.ics.model.RabbitMQOrderBean;
 import com.ics.process.MySQLConnect;
 import com.ics.process.RabbitMQConsumer;
@@ -25,9 +26,9 @@ import com.ics.process.RabbitMQConsumer;
  */
 public class PrintToKic extends javax.swing.JFrame {
 
-    public static volatile boolean kicPrintting = false;
     private boolean printkic = false;
     private final PrintToKicController control = new PrintToKicController();
+    private final BalanceControl balanceControl = new BalanceControl();
     private final MySQLConnect dbHealthCheck = new MySQLConnect();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private RabbitMQConsumer rabbitmqConsumer;
@@ -59,26 +60,6 @@ public class PrintToKic extends javax.swing.JFrame {
         if (Value.useRabbitmq) {
             rabbitmqConsumer = new RabbitMQConsumer((tableNo, macno, rawMessage) -> displayDataFromRabbitMQ(rawMessage));
             rabbitmqConsumer.start();
-        }
-    }
-
-    private void loadStatus() {
-        try {
-            pbCheckUpdate.setStringPainted(true);
-            pbCheckUpdate.setMinimum(0);
-            pbCheckUpdate.setMaximum(100);
-            for (int i = 1; i <= 100; i++) {
-                pbCheckUpdate.setValue(i);
-                pbCheckUpdate.setString("LOADDING Data: (" + i + " %)");
-            }
-
-            pbCheckUpdate.setString("Load data Complete ");
-            Thread.sleep(2);
-            for (int i = 100; i >= 0; i--) {
-                pbCheckUpdate.setValue(i);
-                pbCheckUpdate.setString("LOADDING Data: (" + i + " %)");
-            }
-        } catch (InterruptedException e) {
         }
     }
 
@@ -236,28 +217,21 @@ public class PrintToKic extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void kicPrintFromPDA() {
-        if (kicPrintting == false) {
-            BalanceBean balanceBean = control.getBalaneForPDA();
-            if (balanceBean != null) {
-                kicPrintting = true;
-                lblProcessLog.setText("Total Bill: " + balanceBean.getR_Total());
-                lblProcessShow.setText("กำลังพิมพ์ข้อมูล โต๊ะ : " + balanceBean.getR_Table() + " สั่งจากเครื่อง : " + balanceBean.getMacno());
+        BalanceBean balanceBean = control.getBalaneForPDA();
+        if (balanceBean != null) {
+            lblProcessLog.setText("Total Bill: " + balanceBean.getR_Total());
+            lblProcessShow.setText("กำลังพิมพ์ข้อมูล โต๊ะ : " + balanceBean.getR_Table() + " สั่งจากเครื่อง : " + balanceBean.getMacno());
 
-                kichenPrint(balanceBean.getR_Table(), balanceBean.getMacno());
-                kicPrintting = false;
-            }
+            kichenPrint(balanceBean.getR_Table(), balanceBean.getMacno());
         }
     }
 
     private void kichenPrint(String tableNo, String macno) {
         PrintSimpleForm printSimpleForm = new PrintSimpleForm();
 
-        if (Value.printkic) {
-            String[] kicMaster = BranchControl.getKicData20();
-            List<BalanceBean> listBalance = control.getBalaneForPDAByTableNo(tableNo, macno);
-            for (BalanceBean balanceBean : listBalance) {
-                kicPrintting = true;
-                loadStatus();
+        String[] kicMaster = BranchControl.getKicData20();
+        List<BalanceBean> listBalance = control.getBalaneForPDAByTableNo(tableNo, macno);
+        for (BalanceBean balanceBean : listBalance) {
                 String rKic = balanceBean.getR_Kic();
                 lblProcessShow.setText("กำลังพิมพ์ข้อมูล โต๊ะ : " + tableNo + " KIC : " + rKic + " สั่งจากเครื่อง : " + macno);
 
@@ -294,7 +268,6 @@ public class PrintToKic extends javax.swing.JFrame {
                         // Fix #6: ลบ if (printerForm.equals("1")) ที่ซ้ำซ้อน และ printerName ที่ assign ซ้ำ
                         List<BalanceBean> listForm1 = control.getBalancePrintForm1(tableNo, rKic);
                         for (BalanceBean bean : listForm1) {
-                            kicPrintting = true;
                             printSimpleForm.KIC_FORM_1(printerName, tableNo, new String[]{bean.getR_PluCode()});
                         }
                         break;
@@ -302,7 +275,6 @@ public class PrintToKic extends javax.swing.JFrame {
                         printSimpleForm.KIC_FORM_7(printerName, tableNo);
                         break;
                     case "3":
-                        kicPrintting = true;
                         printSimpleForm.KIC_FORM_3New(printerName, tableNo, iKic, balanceBean.getR_ETD(), "PDA", macno);
                         break;
                     case "4":
@@ -314,7 +286,6 @@ public class PrintToKic extends javax.swing.JFrame {
                     case "6":
                         List<BalanceBean> listForm6 = control.getBalancePrintForm6(tableNo, rKic);
                         for (BalanceBean bean : listForm6) {
-                            kicPrintting = true;
                             printSimpleForm.KIC_FORM_6(printerName, tableNo, bean.getR_Index(), bean.getR_PluCode(), bean.getR_Quan(), bean.getR_Total());
                         }
                         break;
@@ -329,13 +300,10 @@ public class PrintToKic extends javax.swing.JFrame {
                         break;
                 }
             }
-        }
 
         if (!PublicVar.Branch_Saveorder.equals("N")) {
             printSimpleForm.KIC_FORM_SaveOrder("", "SaveOrder", tableNo, 0);
         }
-
-        kicPrintting = false;
     }
 
     public static void main(String args[]) {
@@ -420,6 +388,7 @@ public class PrintToKic extends javax.swing.JFrame {
             orderBean.getOrderId(),
             orderBean.getStatus()
         ));
+        
         lblProcessLog.setText(String.format(
             "ยอดรวม: %.2f  รายการ: %d  สาขา: %s",
             orderBean.getTotalAmount(),
@@ -429,8 +398,12 @@ public class PrintToKic extends javax.swing.JFrame {
 
         // แสดงผลบน console เพื่อ verify mapping ครบถ้วน
         System.out.println(orderBean.toString());
-
-        // ดำเนินการพิมพ์ต่อ
-        processTricker();
+        
+        // add balance data
+        int resultSave = balanceControl.saveFromCloudCustomerOrder(orderBean);
+        if (resultSave > 0) {
+            // ดำเนินการพิมพ์ต่อ
+            processTricker();
+        }
     }
 }

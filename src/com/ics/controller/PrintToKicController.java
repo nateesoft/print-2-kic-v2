@@ -1,6 +1,5 @@
 package com.ics.controller;
 
-import com.ics.main.ui.PrintToKic;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ public class PrintToKicController extends DatabaseConnection {
                     + "order by r_etd, r_index";
             try (ResultSet rs = mysqlLocal.getConnection().createStatement().executeQuery(sql)) {
                 if (rs.next()) {
-                    PrintToKic.kicPrintting = true;
                     bean = new BalanceBean();
                     bean.setR_Table(rs.getString("r_table"));
                     bean.setR_Total(rs.getDouble("total"));

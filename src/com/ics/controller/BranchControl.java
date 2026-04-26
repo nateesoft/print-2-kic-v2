@@ -8,7 +8,7 @@ import com.ics.util.ThaiUtil;
 
 public class BranchControl {
 
-    static MySQLConnect mysql = new MySQLConnect();
+    private final static MySQLConnect mysql = new MySQLConnect();
     private static BranchBean branchBean = null;
 
     public static BranchBean getData() {
@@ -172,6 +172,20 @@ public class BranchControl {
         }
 
         return form;
+    }
+
+    public static void updateKicItemNo() {
+        branchBean = null;
+
+        try {
+            mysql.open();
+            String sql = "update branch set KicItemNo=KicItemNo+1";
+            mysql.getConnection().createStatement().executeUpdate(sql);
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        } finally {
+            mysql.close();
+        }
     }
 
 }

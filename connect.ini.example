@@ -6,11 +6,14 @@ pass,nathee2024
 port,3307
 charset,utf-8
 businessType,steak
-printkic,true
-use_rabbitmq,false
+printkic,false
+
+use_rabbitmq,true
 rabbitmq_host,localhost
 rabbitmq_port,5672
 rabbitmq_user,guest
 rabbitmq_pass,guest
 rabbitmq_vhost,/
 rabbitmq_queue,kic_print_queue
+rabbitmq_exchange,food_ordering.events
+rabbitmq_routing_key,order.created

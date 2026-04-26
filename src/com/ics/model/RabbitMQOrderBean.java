@@ -47,12 +47,14 @@ public class RabbitMQOrderBean {
 
     public static class ItemDetail {
         private String itemId;
+        private String code;
         private String name;
         private int quantity;
         private double price;
         private String specialInstructions;
 
         public String getItemId() { return itemId; }
+        public String getCode() { return code; }
         public String getName() { return name; }
         public int getQuantity() { return quantity; }
         public double getPrice() { return price; }
@@ -62,8 +64,8 @@ public class RabbitMQOrderBean {
         public String toString() {
             String note = (specialInstructions != null && !specialInstructions.isEmpty())
                     ? " [" + specialInstructions + "]" : "";
-            return String.format("  %s | %s x%d @ %.2f%s",
-                    itemId, name, quantity, price, note);
+            return String.format("  %s | %s | %s x%d @ %.2f%s",
+                    itemId, code, name, quantity, price, note);
         }
     }
 
@@ -226,12 +228,13 @@ public class RabbitMQOrderBean {
     private static ItemDetail parseOneItemDetail(String json) {
         ItemDetail item = new ItemDetail();
         item.itemId              = extractValue(json, "itemId");
+        item.code                = extractValue(json, "code");
         item.name                = extractValue(json, "name");
         item.quantity            = parseInt(extractValue(json, "quantity"), 0);
         item.price               = parseDouble(extractValue(json, "price"), 0.0);
         item.specialInstructions = extractValue(json, "specialInstructions");
 
-        return (item.itemId == null && item.name == null) ? null : item;
+        return (item.itemId == null && item.code == null && item.name == null) ? null : item;
     }
 
     private static int parseInt(String val, int def) {

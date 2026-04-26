@@ -146,7 +146,6 @@ public class PrintKicFormReport {
             param.clear();
             report.closeConnection();
             ctPrint.setPrintCheckBillItemAfterSendKic(tableNo);
-            Thread.sleep(100);
         } catch (Exception ex) {
             Logger.getLogger(PrintKicFormReport.class.getName()).log(Level.SEVERE, null, ex);
         }

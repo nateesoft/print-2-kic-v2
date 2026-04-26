@@ -127,11 +127,6 @@ public class MySQLConnect {
     }
 
     public void open() {
-        try {
-            close();
-            Thread.sleep(2);
-        } catch (InterruptedException e) {
-        }
         if (!MySQLConstants.MYSQL_CONNECT.isEmpty()) {
             close();
         }

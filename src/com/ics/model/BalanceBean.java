@@ -8,8 +8,6 @@ public class BalanceBean {
     private String R_Table;
     private Date R_Date;
     private String R_Time;
-    private String R_LoginDate;
-    private String LoginTime;
     private String Macno;
     private String Cashier;
     private String R_Emp;
@@ -44,21 +42,6 @@ public class BalanceBean {
     private String R_Void;
     private String R_VoidUser;
     private String R_VoidTime;
-    private String R_MenuSet1;
-    private String R_MenuSet2;
-    private String R_MenuSet3;
-    private String R_MenuSet4;
-    private String R_MenuSet5;
-    private String R_MenuSet6;
-    private String R_MenuSet7;
-    private String R_MenuSet8;
-    private String R_MenuSet9;
-    private String R_MenuSet10;
-    private String R_MenuSet11;
-    private String R_MenuSet12;
-    private String R_MenuSet13;
-    private String R_MenuSet14;
-    private String R_MenuSet15;
     private String R_Opt1;
     private String R_Opt2;
     private String R_Opt3;
@@ -97,6 +80,25 @@ public class BalanceBean {
     private String R_MoveFlag = "0";
     private String R_MovePrint = "N";
     private String R_Pause;
+    private String R_EmpName;
+    private double R_VoidQuan;
+    private String R_LoginDate;
+    private String LoginTime;
+    private String R_MenuSet1;
+    private String R_MenuSet2;
+    private String R_MenuSet3;
+    private String R_MenuSet4;
+    private String R_MenuSet5;
+    private String R_MenuSet6;
+    private String R_MenuSet7;
+    private String R_MenuSet8;
+    private String R_MenuSet9;
+    private String R_MenuSet10;
+    private String R_MenuSet11;
+    private String R_MenuSet12;
+    private String R_MenuSet13;
+    private String R_MenuSet14;
+    private String R_MenuSet15;
     private String R_CardPay = "N";
     private String R_Pickup = "P";
     private String R_CallWait;
@@ -110,6 +112,33 @@ public class BalanceBean {
     private String R_Indulgent;
     private double R_totalVAT = 0;
     private double R_totalNonVAT = 0;
+    private String R_TranType;
+    private String R_FreeCode;
+    private String TranType;
+    private String R_PrintItemBill;
+    private String R_CountTime;
+    private String R_EOpt1;
+    private String R_EOpt2;
+    private String R_EOpt3;
+    private String R_EOpt4;
+    private String R_EOpt5;
+    private String R_EOpt6;
+    private String R_EOpt7;
+    private String R_EOpt8;
+    private String R_EOpt9;
+    private String R_Course;
+    private String VoidMsg;
+    private String SoneCode;
+    private String R_Earn;
+    private String R_EarnNo;
+    private String PDAPrintCheck;
+    private String PDAEmp;
+    private String PDAPrintCheckStation;
+    private String PDAPrintChekItemStation;
+    private String R_PrVcType;
+    private String R_PrVcCode;
+    private float R_PrVcAmt;
+    private float R_PrVcAdj;
 
     public String getR_Index() {
         return R_Index;
@@ -959,5 +988,236 @@ public class BalanceBean {
         this.R_totalNonVAT = R_totalNonVAT;
     }
 
-    
+    public String getR_EmpName() {
+        return R_EmpName;
+    }
+
+    public void setR_EmpName(String R_EmpName) {
+        this.R_EmpName = R_EmpName;
+    }
+
+    public double getR_VoidQuan() {
+        return R_VoidQuan;
+    }
+
+    public void setR_VoidQuan(double R_VoidQuan) {
+        this.R_VoidQuan = R_VoidQuan;
+    }
+
+    public String getR_TranType() {
+        return R_TranType;
+    }
+
+    public void setR_TranType(String R_TranType) {
+        this.R_TranType = R_TranType;
+    }
+
+    public String getR_FreeCode() {
+        return R_FreeCode;
+    }
+
+    public void setR_FreeCode(String R_FreeCode) {
+        this.R_FreeCode = R_FreeCode;
+    }
+
+    public String getTranType() {
+        return TranType;
+    }
+
+    public void setTranType(String TranType) {
+        this.TranType = TranType;
+    }
+
+    public String getR_PrintItemBill() {
+        return R_PrintItemBill;
+    }
+
+    public void setR_PrintItemBill(String R_PrintItemBill) {
+        this.R_PrintItemBill = R_PrintItemBill;
+    }
+
+    public String getR_CountTime() {
+        return R_CountTime;
+    }
+
+    public void setR_CountTime(String R_CountTime) {
+        this.R_CountTime = R_CountTime;
+    }
+
+    public String getR_EOpt1() {
+        return R_EOpt1;
+    }
+
+    public void setR_EOpt1(String R_EOpt1) {
+        this.R_EOpt1 = R_EOpt1;
+    }
+
+    public String getR_EOpt2() {
+        return R_EOpt2;
+    }
+
+    public void setR_EOpt2(String R_EOpt2) {
+        this.R_EOpt2 = R_EOpt2;
+    }
+
+    public String getR_EOpt3() {
+        return R_EOpt3;
+    }
+
+    public void setR_EOpt3(String R_EOpt3) {
+        this.R_EOpt3 = R_EOpt3;
+    }
+
+    public String getR_EOpt4() {
+        return R_EOpt4;
+    }
+
+    public void setR_EOpt4(String R_EOpt4) {
+        this.R_EOpt4 = R_EOpt4;
+    }
+
+    public String getR_EOpt5() {
+        return R_EOpt5;
+    }
+
+    public void setR_EOpt5(String R_EOpt5) {
+        this.R_EOpt5 = R_EOpt5;
+    }
+
+    public String getR_EOpt6() {
+        return R_EOpt6;
+    }
+
+    public void setR_EOpt6(String R_EOpt6) {
+        this.R_EOpt6 = R_EOpt6;
+    }
+
+    public String getR_EOpt7() {
+        return R_EOpt7;
+    }
+
+    public void setR_EOpt7(String R_EOpt7) {
+        this.R_EOpt7 = R_EOpt7;
+    }
+
+    public String getR_EOpt8() {
+        return R_EOpt8;
+    }
+
+    public void setR_EOpt8(String R_EOpt8) {
+        this.R_EOpt8 = R_EOpt8;
+    }
+
+    public String getR_EOpt9() {
+        return R_EOpt9;
+    }
+
+    public void setR_EOpt9(String R_EOpt9) {
+        this.R_EOpt9 = R_EOpt9;
+    }
+
+    public String getR_Course() {
+        return R_Course;
+    }
+
+    public void setR_Course(String R_Course) {
+        this.R_Course = R_Course;
+    }
+
+    public String getVoidMsg() {
+        return VoidMsg;
+    }
+
+    public void setVoidMsg(String VoidMsg) {
+        this.VoidMsg = VoidMsg;
+    }
+
+    public String getSoneCode() {
+        return SoneCode;
+    }
+
+    public void setSoneCode(String SoneCode) {
+        this.SoneCode = SoneCode;
+    }
+
+    public String getR_Earn() {
+        return R_Earn;
+    }
+
+    public void setR_Earn(String R_Earn) {
+        this.R_Earn = R_Earn;
+    }
+
+    public String getR_EarnNo() {
+        return R_EarnNo;
+    }
+
+    public void setR_EarnNo(String R_EarnNo) {
+        this.R_EarnNo = R_EarnNo;
+    }
+
+    public String getPDAPrintCheck() {
+        return PDAPrintCheck;
+    }
+
+    public void setPDAPrintCheck(String PDAPrintCheck) {
+        this.PDAPrintCheck = PDAPrintCheck;
+    }
+
+    public String getPDAEmp() {
+        return PDAEmp;
+    }
+
+    public void setPDAEmp(String PDAEmp) {
+        this.PDAEmp = PDAEmp;
+    }
+
+    public String getPDAPrintCheckStation() {
+        return PDAPrintCheckStation;
+    }
+
+    public void setPDAPrintCheckStation(String PDAPrintCheckStation) {
+        this.PDAPrintCheckStation = PDAPrintCheckStation;
+    }
+
+    public String getPDAPrintChekItemStation() {
+        return PDAPrintChekItemStation;
+    }
+
+    public void setPDAPrintChekItemStation(String PDAPrintChekItemStation) {
+        this.PDAPrintChekItemStation = PDAPrintChekItemStation;
+    }
+
+    public String getR_PrVcType() {
+        return R_PrVcType;
+    }
+
+    public void setR_PrVcType(String R_PrVcType) {
+        this.R_PrVcType = R_PrVcType;
+    }
+
+    public String getR_PrVcCode() {
+        return R_PrVcCode;
+    }
+
+    public void setR_PrVcCode(String R_PrVcCode) {
+        this.R_PrVcCode = R_PrVcCode;
+    }
+
+    public float getR_PrVcAmt() {
+        return R_PrVcAmt;
+    }
+
+    public void setR_PrVcAmt(float R_PrVcAmt) {
+        this.R_PrVcAmt = R_PrVcAmt;
+    }
+
+    public float getR_PrVcAdj() {
+        return R_PrVcAdj;
+    }
+
+    public void setR_PrVcAdj(float R_PrVcAdj) {
+        this.R_PrVcAdj = R_PrVcAdj;
+    }
+
 }

@@ -272,10 +272,6 @@ public class PrintSimpleForm {
                     for (String data1 : strs) {
                         Value.printerDriverKitChenName = "kic" + printerName;
                         pd.addTextIFont(data1);
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
-                        }
                     }
                     pd.printHTMLKitChen(Value.printerDriverKitChenName);
                 }
@@ -448,10 +444,6 @@ public class PrintSimpleForm {
         for (String data2 : strs1) {
             Value.printerDriverKitChenName = "kic" + printerName;
             pd2.addTextIFont(data2);
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-            }
         }
 
         pd2.printHTMLKitChen(Value.printerDriverKitChenName);
@@ -2452,10 +2444,6 @@ public class PrintSimpleForm {
                                 for (String data1 : strs) {
                                     Value.printerDriverKitChenName = printerName;
                                     pd.addTextIFont(data1);
-                                    try {
-                                        Thread.sleep(50);
-                                    } catch (InterruptedException e) {
-                                    }
                                 }
 
                                 pd.printHTMLKitChen(Value.printerDriverKitChenName);
@@ -2795,10 +2783,6 @@ public class PrintSimpleForm {
         for (String data1 : strs) {
             Value.printerDriverKitChenName = printerName;
             printDriver.addTextIFont(data1);
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-            }
         }
 
         printDriver.printHTMLKitChen(Value.printerDriverKitChenName);
@@ -2975,10 +2959,6 @@ public class PrintSimpleForm {
         for (String data1 : strs) {
             Value.printerDriverKitChenName = "kic" + printerName;
             pd.addTextIFont(data1);
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-            }
         }
 
         pd.printHTMLKitChen(Value.printerDriverKitChenName);
