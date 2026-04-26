@@ -52,6 +52,7 @@ public class RabbitMQOrderBean {
         private int quantity;
         private double price;
         private String specialInstructions;
+        private String diningOption;
 
         public String getItemId() { return itemId; }
         public String getCode() { return code; }
@@ -59,13 +60,14 @@ public class RabbitMQOrderBean {
         public int getQuantity() { return quantity; }
         public double getPrice() { return price; }
         public String getSpecialInstructions() { return specialInstructions; }
+        public String getDiningOption() { return diningOption; }
 
         @Override
         public String toString() {
             String note = (specialInstructions != null && !specialInstructions.isEmpty())
                     ? " [" + specialInstructions + "]" : "";
-            return String.format("  %s | %s | %s x%d @ %.2f%s",
-                    itemId, code, name, quantity, price, note);
+            return String.format("  %s | %s %s | %s x%d @ %.2f%s",
+                    itemId, code, diningOption, name, quantity, price, note);
         }
     }
 
@@ -233,6 +235,7 @@ public class RabbitMQOrderBean {
         item.quantity            = parseInt(extractValue(json, "quantity"), 0);
         item.price               = parseDouble(extractValue(json, "price"), 0.0);
         item.specialInstructions = extractValue(json, "specialInstructions");
+        item.diningOption        = extractValue(json, "diningOption");
 
         return (item.itemId == null && item.code == null && item.name == null) ? null : item;
     }

@@ -12,7 +12,8 @@ public class ControlPrintCheckBill {
 
     public void setPrintCheckBillItemAfterSendKic(String tableNO) {
         try {
-            String sql = "update balance set PDAPrintChekItemStation='Y' "
+            String sql = "update balance set "
+                    + "PDAPrintChekItemStation='Y' "
                     + "where PDAPrintChekItemStation='N' and r_table='" + tableNO + "'";
             mysqlLocal.open();
             mysqlLocal.getConnection().createStatement().executeUpdate(sql);

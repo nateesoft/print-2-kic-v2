@@ -42,7 +42,7 @@ public class BalanceControl extends DatabaseConnection {
         List<BalanceBean> listBalance = new ArrayList<>();
         for (ItemDetail itemDetail : orderBean.getItemDetails()) {
             ProductBean product = productControl.getData(itemDetail.getCode());
-            
+
             String[] options = getMenuOptions(itemDetail.getSpecialInstructions());
             String balanceIndex = getIndexBalance(orderBean.getTableNumber());
             BalanceBean balanceBean = new BalanceBean();
@@ -59,14 +59,14 @@ public class BalanceControl extends DatabaseConnection {
             balanceBean.setR_Unit(ThaiUtil.Unicode2ASCII(product.getPUnit1()));
             balanceBean.setR_Group(product.getPGroup());
             balanceBean.setR_Status(product.getPStatus());
-            balanceBean.setR_Normal("");
-            balanceBean.setR_Discount("");
-            balanceBean.setR_Service("");
-            balanceBean.setR_Stock("");
-            balanceBean.setR_Set("");
-            balanceBean.setR_Vat("");
-            balanceBean.setR_Type("");
-            balanceBean.setR_ETD("");
+            balanceBean.setR_Normal(product.getPNormal());
+            balanceBean.setR_Discount(product.getPDiscount());
+            balanceBean.setR_Service(product.getPService());
+            balanceBean.setR_Stock(product.getPStock());
+            balanceBean.setR_Set(product.getPSet());
+            balanceBean.setR_Vat(product.getPVat());
+            balanceBean.setR_Type(product.getPType());
+            balanceBean.setR_ETD(convertToETD(itemDetail.getDiningOption()));
             balanceBean.setR_Quan(itemDetail.getQuantity());
             balanceBean.setR_Price(itemDetail.getPrice());
             balanceBean.setR_Total(itemDetail.getQuantity() * itemDetail.getPrice());
@@ -80,7 +80,7 @@ public class BalanceControl extends DatabaseConnection {
             balanceBean.setR_PrCuQuan(0);
             balanceBean.setR_PrCuAmt(0);
             balanceBean.setR_Redule(0);
-            balanceBean.setR_Kic("");
+            balanceBean.setR_Kic(product.getPKic());
             balanceBean.setR_KicPrint("");
             balanceBean.setR_Void("");
             balanceBean.setR_VoidUser("");
@@ -99,7 +99,7 @@ public class BalanceControl extends DatabaseConnection {
             balanceBean.setR_PrintOK("Y");
             balanceBean.setR_KicOK("");
             balanceBean.setStkCode("");
-            balanceBean.setPosStk("0");
+            balanceBean.setPosStk(product.getPOSStk());
             balanceBean.setR_PrChkType("");
             balanceBean.setR_PrQuan(0);
             balanceBean.setR_PrSubType("");
@@ -367,6 +367,16 @@ public class BalanceControl extends DatabaseConnection {
         String opts[] = ThaiUtil.Unicode2ASCII(specialInstructions).split(",");
         System.arraycopy(opts, 0, options, 0, opts.length);
         return options;
+    }
+
+    private String convertToETD(String diningOption) {
+        if (diningOption.equals("dine-in")) {
+            return "E";
+        } else if (diningOption.equals("takeaway")) {
+            return "T";
+        }
+
+        return "E";
     }
 
 }

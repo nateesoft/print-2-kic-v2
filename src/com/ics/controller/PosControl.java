@@ -10,7 +10,6 @@ import com.ics.util.ThaiUtil;
 
 public class PosControl {
     private static final MySQLConnect mysql = new MySQLConnect();
-
     private static POSConfigSetup posConfigSetup = null;
     private static POSHWSetup poshwsetup = null;
 

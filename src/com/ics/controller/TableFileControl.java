@@ -43,7 +43,6 @@ public class TableFileControl extends DatabaseConnection {
                     bean.setFastDiscAmt(rs.getFloat("FastDiscAmt"));
                     bean.setTrainDisc(rs.getString("TrainDisc"));
                     bean.setTrainDiscAmt(rs.getFloat("TrainDiscAmt"));
-
                     bean.setMemDisc(rs.getString("MemDisc"));
                     bean.setMemDiscAmt(rs.getFloat("MemDiscAmt"));
                     bean.setSubDisc(rs.getString("SubDisc"));

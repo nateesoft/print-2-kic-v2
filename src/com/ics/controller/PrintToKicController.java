@@ -60,7 +60,7 @@ public class PrintToKicController extends DatabaseConnection {
             String sql = "select r_kic,r_etd from balance "
                     + "where r_table='" + tableNo + "' "
                     + "and R_PrintOK='Y' "
-                    + "and TranType='PDA' "
+                    + "and TranType='" + PDA_TRAN_TYPE + "' "
                     + "and R_KicPrint<>'P' "
                     + "and R_Kic<>'0' "
                     + "and R_Void<>'V' "
@@ -93,7 +93,7 @@ public class PrintToKicController extends DatabaseConnection {
         mysqlLocal.open();
         try {
             String sql = "select * from balance "
-                    + "where trantype='PDA' "
+                    + "where trantype='" + PDA_TRAN_TYPE + "' "
                     + "and r_table='" + tableNo + "' "
                     + "and R_PrintOK='Y' "
                     + "and R_KicPrint<>'P' "

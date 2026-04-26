@@ -15,9 +15,7 @@ public class ProductControl {
     private final MySQLConnect mysql = new MySQLConnect();
 
     public ProductBean getData(String PCode) {
-        String sql = "select * "
-                + "from product "
-                + "where PCode='" + PCode + "'";
+        String sql = "select * from product where PCode='" + PCode + "'";
         ProductBean productBean = new ProductBean();
 
         try {

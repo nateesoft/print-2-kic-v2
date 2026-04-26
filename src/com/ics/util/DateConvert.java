@@ -31,16 +31,10 @@ public class DateConvert {
 
     public String GetCurrentDate() {
         SimpleDateFormat GetLocalDate = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-        SimpleDateFormat ShowDatefmt = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
         Calendar c = new GregorianCalendar();
-        int MM = c.get(Calendar.MONTH);
-        int yyyy = c.get(Calendar.YEAR);
-        int dd = c.get(Calendar.DATE);
-        String dateString = "";
         String DateOrder = "";
         Calendar current = Calendar.getInstance();
         current.add(Calendar.DATE, +2);
-        dateString += ShowDatefmt.format(current.getTime());
         Calendar current1 = Calendar.getInstance();
         current1.add(Calendar.DATE, +0);
         DateOrder += GetLocalDate.format(current1.getTime());
@@ -49,10 +43,6 @@ public class DateConvert {
 
     public String GetCurrentDateFM(String FM) {
         SimpleDateFormat GetLocalDate = new SimpleDateFormat(FM, Locale.ENGLISH);
-        Calendar c = new GregorianCalendar();
-        int MM = c.get(Calendar.MONTH);
-        int yyyy = c.get(Calendar.YEAR);
-        int dd = c.get(Calendar.DATE);
         String dateString = "";
         String DateOrder = "";
         Calendar current = Calendar.getInstance();
@@ -78,7 +68,6 @@ public class DateConvert {
 
     public String GetCurrentTime() {
         SimpleDateFormat ShowDatefmt = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
-        Calendar c = new GregorianCalendar();
         String TimeString = "";
         Calendar current = Calendar.getInstance();
         current.add(Calendar.DATE, 0);
@@ -118,7 +107,6 @@ public class DateConvert {
         } else {
             valueReturn = -1;
         }
-        System.out.println(valueReturn);
         return valueReturn;
 
     }

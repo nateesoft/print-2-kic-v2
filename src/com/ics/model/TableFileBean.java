@@ -2,7 +2,7 @@ package com.ics.model;
 
 import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.List;
 
 public class TableFileBean {
 
@@ -60,7 +60,7 @@ public class TableFileBean {
     private String TFinishTime;
     private String TTableIsOn = "N";
     private String TAutoClose = "Y";
-    private ArrayList<BalanceBean> dataBalance = new ArrayList<BalanceBean>();
+    private List<BalanceBean> dataBalance = new ArrayList<>();
 
     public String getTcode() {
         return Tcode;
@@ -494,11 +494,11 @@ public class TableFileBean {
         this.TAutoClose = TAutoClose;
     }
 
-    public ArrayList<BalanceBean> getDataBalance() {
+    public List<BalanceBean> getDataBalance() {
         return dataBalance;
     }
 
-    public void setDataBalance(ArrayList<BalanceBean> dataBalance) {
+    public void setDataBalance(List<BalanceBean> dataBalance) {
         this.dataBalance = dataBalance;
     }
     

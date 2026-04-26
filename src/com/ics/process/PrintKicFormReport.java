@@ -4,21 +4,15 @@ package com.ics.process;
  *
  * @author User
  */
-import com.ics.model.ConfigFile;
 import com.ics.model.TableFileBean;
 import com.ics.util.ThaiUtil;
-import com.ics.util.DateConvert;
 import com.ics.controller.TableFileControl;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.attribute.AttributeSet;
@@ -28,6 +22,7 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.PrinterName;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -37,22 +32,8 @@ import net.sf.jasperreports.engine.export.JRPrintServiceExporterParameter;
 
 public class PrintKicFormReport {
 
-    private static final String server = ConfigFile.getProperties("server");
-    private static final String db = ConfigFile.getProperties("database");
-
-    private Connection connect = null;
-
-    private static final String MYSQL_HOST = "jdbc:mysql://" + server + ":3307/";
-
-    private static final String MYSQL_DB = db;
-    private static final String MYSQL_USER_PASS = "user=root&password=";
-    private static final String MYSQL_URL = MYSQL_HOST + MYSQL_DB + "?" + MYSQL_USER_PASS;
-
-    private static final String JASPER_FILE = "\\src\\java\\printReport\\kicFrom_7Qrcode.jasper";
-    private final DecimalFormat df = new DecimalFormat("#,##0.00");
     private final DecimalFormat intFM = new DecimalFormat("#,##0");
-    
-    private final DateConvert dc = new DateConvert();
+    private static final MySQLConnect mysql = new MySQLConnect();
 
     public void PrintKicForm8_Report(
             final String tableNo, final String printerName, final String Macno, final String R_ETD, final String R_Index) throws Exception {
@@ -66,10 +47,10 @@ public class PrintKicFormReport {
             PrintKicFormReport report = new PrintKicFormReport();
 
             // open connection
-            report.openConnection();
+            mysql.open();
 
             // source file
-            String sourceFileName = "D:\\Source Code Java\\softposrestaurantForStandard\\src\\report\\file\\kicFrom_8Qrcode.jrxml";
+            String sourceFileName = getClass().getResource("/com/ics/jasperreport/kicFrom_8Qrcode.jrxml").getPath();
             String reportSource = JasperCompileManager.compileReportToFile(sourceFileName);
 
             // set parameters
@@ -105,14 +86,13 @@ public class PrintKicFormReport {
                     param.put("etdThai", etdThai);
                     break;
                 }
-
             }
 
             //Footer
             param.put("R_Index", ThaiUtil.ASCII2Unicode(R_Index));
             param.put("custTomer", ThaiUtil.ASCII2Unicode(intFM.format(tbBean.getTCustomer())));
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(reportSource, param, report.getConnection());
+            JasperPrint jasperPrint = JasperFillManager.fillReport(reportSource, param, mysql.getConnection());
             PrinterJob printerJob = PrinterJob.getPrinterJob();
 
             PageFormat pageFormat = PrinterJob.getPrinterJob().defaultPage();
@@ -144,29 +124,11 @@ public class PrintKicFormReport {
             exporter.exportReport();
 
             param.clear();
-            report.closeConnection();
             ctPrint.setPrintCheckBillItemAfterSendKic(tableNo);
-        } catch (Exception ex) {
-            Logger.getLogger(PrintKicFormReport.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JRException ex) {
+            System.err.println(ex.getMessage());
+        } finally {
+            mysql.close();
         }
-
-    }
-
-    public Connection getConnection() throws Exception {
-        return connect;
-    }
-
-    public void closeConnection() throws Exception {
-        if (connect != null) {
-            connect.close();
-        }
-    }
-
-    public Connection openConnection() throws Exception {
-        if (connect == null) {
-            Class.forName("com.mysql.jdbc.Driver");
-            connect = DriverManager.getConnection(MYSQL_URL);
-        }
-        return connect;
     }
 }
