@@ -1,0 +1,4 @@
+Apr 27, 2026 3:06:16 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] starting consumer...
+Apr 27, 2026 3:06:17 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] connected to 192.168.1.197:5673 queue=[kic_print_queue]

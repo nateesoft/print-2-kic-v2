@@ -1,6 +1,7 @@
 package com.ics.process;
 
 import com.ics.constant.Value;
+import com.ics.util.AppLogUtil;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -78,7 +79,7 @@ public class RabbitMQConsumer {
      */
     public void start() {
         running = true;
-        System.out.println("RabbitMQ: starting consumer...");
+        AppLogUtil.info(RabbitMQConsumer.class, "starting consumer...");
         connect();
     }
 
@@ -89,7 +90,7 @@ public class RabbitMQConsumer {
         running = false;
         reconnectScheduler.shutdownNow();
         closeQuietly();
-        System.out.println("RabbitMQ: consumer stopped.");
+        AppLogUtil.info(RabbitMQConsumer.class, "consumer stopped.");
     }
 
     private void connect() {
@@ -123,24 +124,24 @@ public class RabbitMQConsumer {
             // ตั้ง listener สำหรับ reconnect เมื่อ connection ขาด
             connection.addShutdownListener(cause -> {
                 if (running && !cause.isInitiatedByApplication()) {
-                    System.err.println("RabbitMQ: connection lost — " + cause.getMessage());
+                    AppLogUtil.warn(RabbitMQConsumer.class, "connection lost — " + cause.getMessage());
                     scheduleReconnect();
                 }
             });
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody(), StandardCharsets.UTF_8).trim();
-                System.out.println("RabbitMQ: received message = [" + message + "]");
+                AppLogUtil.info(RabbitMQConsumer.class, "received message = [" + message + "]");
                 try {
                     dispatchPrint(message);
                 } catch (Exception e) {
-                    System.err.println("RabbitMQ: error in print callback — " + e.getMessage());
+                    AppLogUtil.error(RabbitMQConsumer.class, "error in print callback — " + e.getMessage());
                 } finally {
                     // ยืนยัน acknowledge หลังประมวลผลเสร็จเสมอ
                     try {
                         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                     } catch (IOException ackEx) {
-                        System.err.println("RabbitMQ: ack failed — " + ackEx.getMessage());
+                        AppLogUtil.error(RabbitMQConsumer.class, "ack failed — " + ackEx.getMessage());
                     }
                 }
             };
@@ -150,19 +151,19 @@ public class RabbitMQConsumer {
                     false,           // autoAck=false เพื่อให้เราควบคุม ack เอง
                     deliverCallback,
                     consumerTag -> {
-                        System.err.println("RabbitMQ: consumer cancelled — " + consumerTag);
+                        AppLogUtil.warn(RabbitMQConsumer.class, "consumer cancelled — " + consumerTag);
                         if (running) {
                             scheduleReconnect();
                         }
                     }
             );
 
-            System.out.println("RabbitMQ: connected to "
+            AppLogUtil.info(RabbitMQConsumer.class, "connected to "
                     + Value.rabbitmqHost + ":" + Value.rabbitmqPort
                     + " queue=[" + Value.rabbitmqQueue + "]");
 
         } catch (IOException | TimeoutException e) {
-            System.err.println("RabbitMQ: connect failed — " + e.getMessage());
+            AppLogUtil.error(RabbitMQConsumer.class, "connect failed — " + e.getMessage());
             if (running) {
                 scheduleReconnect();
             }
@@ -251,7 +252,7 @@ public class RabbitMQConsumer {
     }
 
     private void scheduleReconnect() {
-        System.out.println("RabbitMQ: scheduling reconnect in " + RECONNECT_DELAY_SECONDS + "s...");
+        AppLogUtil.info(RabbitMQConsumer.class, "scheduling reconnect in " + RECONNECT_DELAY_SECONDS + "s...");
         try {
             reconnectScheduler.schedule(() -> {
                 closeQuietly();

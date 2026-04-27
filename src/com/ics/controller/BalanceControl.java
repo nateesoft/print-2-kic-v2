@@ -39,16 +39,21 @@ public class BalanceControl extends DatabaseConnection {
     }
 
     private List<BalanceBean> mappingOrderBalance(RabbitMQOrderBean orderBean) {
+        String balanceLastIndex = getIndexBalance(orderBean.getTableNumber());
+        
         List<BalanceBean> listBalance = new ArrayList<>();
+        int nextNumber = 0;
         for (ItemDetail itemDetail : orderBean.getItemDetails()) {
             ProductBean product = productControl.getData(itemDetail.getCode());
-
+            
+            String balanceIndex = balanceLastIndex.split("/")[1];
+            int indexNumber = Integer.parseInt(balanceIndex) + nextNumber;
+            
             String[] options = getMenuOptions(itemDetail.getSpecialInstructions());
-            String balanceIndex = getIndexBalance(orderBean.getTableNumber());
             BalanceBean balanceBean = new BalanceBean();
             balanceBean.setTranType("PDA"); // default from web order
-            balanceBean.setR_TranType("0");
-            balanceBean.setR_Index(balanceIndex);
+            balanceBean.setR_TranType("0");            
+            balanceBean.setR_Index(orderBean.getTableNumber() + "/" + String.format("%03d", indexNumber));
             balanceBean.setR_Table(orderBean.getTableNumber());
             balanceBean.setR_Time("");
             balanceBean.setMacno("");
@@ -129,6 +134,8 @@ public class BalanceControl extends DatabaseConnection {
             balanceBean.setR_PrVcAdj(0);
 
             listBalance.add(balanceBean);
+            
+            nextNumber++;
         }
 
         return listBalance;

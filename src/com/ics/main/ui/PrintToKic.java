@@ -19,6 +19,7 @@ import com.ics.controller.BalanceControl;
 import com.ics.model.RabbitMQOrderBean;
 import com.ics.process.MySQLConnect;
 import com.ics.process.RabbitMQConsumer;
+import com.ics.util.AppLogUtil;
 
 /**
  *
@@ -245,7 +246,7 @@ public class PrintToKic extends javax.swing.JFrame {
                     // Fix #3: ป้องกัน NumberFormatException ถ้า rKic ไม่ใช่ตัวเลข
                     iKic = Integer.parseInt(rKic);
                 } catch (NumberFormatException e) {
-                    System.err.println("rKic ไม่ใช่ตัวเลขที่ถูกต้อง: " + rKic);
+                    AppLogUtil.error(PrintToKic.class, "rKic ไม่ใช่ตัวเลขที่ถูกต้อง: " + rKic);
                     continue;
                 }
 
@@ -296,7 +297,7 @@ public class PrintToKic extends javax.swing.JFrame {
                         printSimpleForm.KIC_FORM_8Qrcode(printerName, tableNo, balanceBean.getR_ETD());
                         break;
                     default:
-                        System.err.println("ไม่พบฟอร์มปริ้นเตอร์ครัวในระบบที่สามารใช้งานได้ !!!");
+                        AppLogUtil.warn(PrintToKic.class, "ไม่พบฟอร์มปริ้นเตอร์ครัว kic=" + rKic + " form=" + printerForm);
                         break;
                 }
             }
@@ -343,11 +344,13 @@ public class PrintToKic extends javax.swing.JFrame {
 
         if (dbConnected) {
             // 2. DB พร้อมใช้งาน → ดำเนินการตรวจสอบคิวพิมพ์
+            AppLogUtil.info(PrintToKic.class, "DB connected — checking print queue");
             lblProcessShow.setText("เชื่อมต่อ Database สำเร็จ - ตรวจสอบคิวพิมพ์...");
 
             BranchBean branchBean = BranchControl.getData();
             // Fix: ป้องกัน NPE ถ้า getData() คืนค่า null (DB query ล้มเหลว)
             if (branchBean == null) {
+                AppLogUtil.error(PrintToKic.class, "Branch data load failed");
                 lblProcessShow.setText("ไม่สามารถโหลดข้อมูล Branch ได้ กำลังลองใหม่...");
                 lblProcessLog.setText("Log! : Branch data error");
                 return;
@@ -365,18 +368,19 @@ public class PrintToKic extends javax.swing.JFrame {
             kicPrintFromPDA();
         } else {
             // 3. DB ไม่พร้อม → แสดงสถานะและรอรอบถัดไปอัตโนมัติ
+            AppLogUtil.warn(PrintToKic.class, "DB connection failed — will retry");
             lblProcessShow.setText("ไม่สามารถเชื่อมต่อ Database ได้ กำลังลองใหม่...");
             lblProcessLog.setText("Log! : DB connection error");
         }
     }
     
     private void displayDataFromRabbitMQ(String rawMessage) {
-        System.out.println("Display data from rabbitMQ: ");
+        AppLogUtil.info(PrintToKic.class, "RabbitMQ message received");
 
         RabbitMQOrderBean orderBean = RabbitMQOrderBean.fromJson(rawMessage);
 
         if (orderBean == null) {
-            System.err.println("RabbitMQ: mapping failed — rawMessage is null or empty");
+            AppLogUtil.error(PrintToKic.class, "RabbitMQ mapping failed — rawMessage is null or empty");
             lblProcessShow.setText("[RabbitMQ] Mapping failed: empty message");
             return;
         }
@@ -396,8 +400,7 @@ public class PrintToKic extends javax.swing.JFrame {
             orderBean.getBranchId()
         ));
 
-        // แสดงผลบน console เพื่อ verify mapping ครบถ้วน
-        System.out.println(orderBean.toString());
+        AppLogUtil.info(PrintToKic.class, orderBean.toString());
         
         // add balance data
         int resultSave = balanceControl.saveFromCloudCustomerOrder(orderBean);
