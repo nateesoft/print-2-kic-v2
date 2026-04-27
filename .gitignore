@@ -3,3 +3,4 @@ build
 dist
 connect.ini
 webconnect.ini
+logs

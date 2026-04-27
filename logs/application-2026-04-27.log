@@ -2,3 +2,173 @@ Apr 27, 2026 3:06:16 PM com.ics.util.AppLogUtil log
 INFO: [RabbitMQConsumer] starting consumer...
 Apr 27, 2026 3:06:17 PM com.ics.util.AppLogUtil log
 INFO: [RabbitMQConsumer] connected to 192.168.1.197:5673 queue=[kic_print_queue]
+Apr 27, 2026 3:37:06 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] starting consumer...
+Apr 27, 2026 3:37:06 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] connected to 192.168.1.197:5673 queue=[kic_print_queue]
+Apr 27, 2026 3:37:33 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] received message = [{"eventId":"8baa3070-c501-487c-8fc1-aac7cb41ec64","eventType":"order.created","timestamp":"2026-04-27T08:37:33.147Z","version":"1.0","source":"food-ordering-service","branchId":1,"payload":{"orderId":"ORD-MOGY262S-TLZ3","internalId":118,"tableNumber":"A1","status":"PREPARING","totalAmount":410,"totalItems":3,"itemCount":3,"createdAt":"2026-04-27T08:37:33.135Z","itemDetails":[{"itemId":"ITEM-001","code":"0205","name":"Pad Thai Special","quantity":1,"price":120,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-002","code":"0101","name":"Tom Yum Soup","quantity":1,"price":150,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-003","code":"0102","name":"Green Curry","quantity":1,"price":140,"specialInstructions":"","diningOption":"dine-in"}]}}]
+Apr 27, 2026 3:37:33 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] RabbitMQ message received
+Apr 27, 2026 3:37:38 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] ========== RabbitMQ Order Mapping ==========
+  Order ID    : ORD-MOGY262S-TLZ3 (ID=118)
+  Branch ID   : 1
+  Table       : A1
+  Status      : PREPARING
+  Total       : 410.00  Items=3  Count=3
+  Created At  : 2026-04-27T08:37:33.135Z
+  Item Details:
+  ITEM-001 | 0205 dine-in | Pad Thai Special x1 @ 120.00
+  ITEM-002 | 0101 dine-in | Tom Yum Soup x1 @ 150.00
+  ITEM-003 | 0102 dine-in | Green Curry x1 @ 140.00
+============================================
+Apr 27, 2026 3:37:42 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] DB connected — checking print queue
+Apr 27, 2026 3:41:48 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] starting consumer...
+Apr 27, 2026 3:41:49 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] connected to 192.168.1.197:5673 queue=[kic_print_queue]
+Apr 27, 2026 3:41:49 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] received message = [{"eventId":"13e3f86f-791f-49fa-b9c4-25e8e4c4703a","eventType":"order.created","timestamp":"2026-04-27T08:38:28.521Z","version":"1.0","source":"food-ordering-service","branchId":1,"payload":{"orderId":"ORD-MOGY3CT9-KVPH","internalId":119,"tableNumber":"A1","status":"PREPARING","totalAmount":410,"totalItems":3,"itemCount":3,"createdAt":"2026-04-27T08:38:28.510Z","itemDetails":[{"itemId":"ITEM-001","code":"0205","name":"Pad Thai Special","quantity":1,"price":120,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-002","code":"0101","name":"Tom Yum Soup","quantity":1,"price":150,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-003","code":"0102","name":"Green Curry","quantity":1,"price":140,"specialInstructions":"","diningOption":"dine-in"}]}}]
+Apr 27, 2026 3:41:57 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] RabbitMQ message received
+Apr 27, 2026 3:42:01 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] ========== RabbitMQ Order Mapping ==========
+  Order ID    : ORD-MOGY3CT9-KVPH (ID=119)
+  Branch ID   : 1
+  Table       : A1
+  Status      : PREPARING
+  Total       : 410.00  Items=3  Count=3
+  Created At  : 2026-04-27T08:38:28.510Z
+  Item Details:
+  ITEM-001 | 0205 dine-in | Pad Thai Special x1 @ 120.00
+  ITEM-002 | 0101 dine-in | Tom Yum Soup x1 @ 150.00
+  ITEM-003 | 0102 dine-in | Green Curry x1 @ 140.00
+============================================
+Apr 27, 2026 3:42:04 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] DB connected — checking print queue
+Apr 27, 2026 3:42:15 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] received message = [{"eventId":"3d122d08-00d5-4a34-975b-78124b612ae7","eventType":"order.created","timestamp":"2026-04-27T08:39:12.613Z","version":"1.0","source":"food-ordering-service","branchId":1,"payload":{"orderId":"ORD-MOGY4AU0-UKZ8","internalId":120,"tableNumber":"A1","status":"PREPARING","totalAmount":410,"totalItems":3,"itemCount":3,"createdAt":"2026-04-27T08:39:12.601Z","itemDetails":[{"itemId":"ITEM-001","code":"0205","name":"Pad Thai Special","quantity":1,"price":120,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-002","code":"0101","name":"Tom Yum Soup","quantity":1,"price":150,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-003","code":"0102","name":"Green Curry","quantity":1,"price":140,"specialInstructions":"","diningOption":"dine-in"}]}}]
+Apr 27, 2026 3:42:18 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] RabbitMQ message received
+Apr 27, 2026 3:42:20 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] ========== RabbitMQ Order Mapping ==========
+  Order ID    : ORD-MOGY4AU0-UKZ8 (ID=120)
+  Branch ID   : 1
+  Table       : A1
+  Status      : PREPARING
+  Total       : 410.00  Items=3  Count=3
+  Created At  : 2026-04-27T08:39:12.601Z
+  Item Details:
+  ITEM-001 | 0205 dine-in | Pad Thai Special x1 @ 120.00
+  ITEM-002 | 0101 dine-in | Tom Yum Soup x1 @ 150.00
+  ITEM-003 | 0102 dine-in | Green Curry x1 @ 140.00
+============================================
+Apr 27, 2026 3:42:20 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] DB connected — checking print queue
+Apr 27, 2026 3:42:30 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] starting consumer...
+Apr 27, 2026 3:42:31 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] connected to 192.168.1.197:5673 queue=[kic_print_queue]
+Apr 27, 2026 3:42:31 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] received message = [{"eventId":"3d122d08-00d5-4a34-975b-78124b612ae7","eventType":"order.created","timestamp":"2026-04-27T08:39:12.613Z","version":"1.0","source":"food-ordering-service","branchId":1,"payload":{"orderId":"ORD-MOGY4AU0-UKZ8","internalId":120,"tableNumber":"A1","status":"PREPARING","totalAmount":410,"totalItems":3,"itemCount":3,"createdAt":"2026-04-27T08:39:12.601Z","itemDetails":[{"itemId":"ITEM-001","code":"0205","name":"Pad Thai Special","quantity":1,"price":120,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-002","code":"0101","name":"Tom Yum Soup","quantity":1,"price":150,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-003","code":"0102","name":"Green Curry","quantity":1,"price":140,"specialInstructions":"","diningOption":"dine-in"}]}}]
+Apr 27, 2026 3:42:41 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] RabbitMQ message received
+Apr 27, 2026 3:42:43 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] ========== RabbitMQ Order Mapping ==========
+  Order ID    : ORD-MOGY4AU0-UKZ8 (ID=120)
+  Branch ID   : 1
+  Table       : A1
+  Status      : PREPARING
+  Total       : 410.00  Items=3  Count=3
+  Created At  : 2026-04-27T08:39:12.601Z
+  Item Details:
+  ITEM-001 | 0205 dine-in | Pad Thai Special x1 @ 120.00
+  ITEM-002 | 0101 dine-in | Tom Yum Soup x1 @ 150.00
+  ITEM-003 | 0102 dine-in | Green Curry x1 @ 140.00
+============================================
+Apr 27, 2026 3:42:43 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] DB connected — checking print queue
+Apr 27, 2026 3:42:51 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] starting consumer...
+Apr 27, 2026 3:42:52 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] connected to 192.168.1.197:5673 queue=[kic_print_queue]
+Apr 27, 2026 3:42:52 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] received message = [{"eventId":"e9b721ec-b609-47c1-9518-d43a064e7e61","eventType":"order.created","timestamp":"2026-04-27T08:40:43.588Z","version":"1.0","source":"food-ordering-service","branchId":1,"payload":{"orderId":"ORD-MOGY690X-E0UN","internalId":121,"tableNumber":"A3","status":"PREPARING","totalAmount":270,"totalItems":2,"itemCount":2,"createdAt":"2026-04-27T08:40:43.575Z","itemDetails":[{"itemId":"ITEM-001","code":"0205","name":"Pad Thai Special","quantity":1,"price":120,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-002","code":"0101","name":"Tom Yum Soup","quantity":1,"price":150,"specialInstructions":"","diningOption":"dine-in"}]}}]
+Apr 27, 2026 3:42:55 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] RabbitMQ message received
+Apr 27, 2026 3:42:55 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] ========== RabbitMQ Order Mapping ==========
+  Order ID    : ORD-MOGY690X-E0UN (ID=121)
+  Branch ID   : 1
+  Table       : A3
+  Status      : PREPARING
+  Total       : 270.00  Items=2  Count=2
+  Created At  : 2026-04-27T08:40:43.575Z
+  Item Details:
+  ITEM-001 | 0205 dine-in | Pad Thai Special x1 @ 120.00
+  ITEM-002 | 0101 dine-in | Tom Yum Soup x1 @ 150.00
+============================================
+Apr 27, 2026 3:43:03 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] starting consumer...
+Apr 27, 2026 3:43:04 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] connected to 192.168.1.197:5673 queue=[kic_print_queue]
+Apr 27, 2026 3:48:09 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] starting consumer...
+Apr 27, 2026 3:48:10 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] connected to 192.168.1.197:5673 queue=[kic_print_queue]
+Apr 27, 2026 3:48:46 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] starting consumer...
+Apr 27, 2026 3:48:46 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] connected to 192.168.1.197:5673 queue=[kic_print_queue]
+Apr 27, 2026 3:49:01 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] received message = [{"eventId":"f08f0aac-d83e-4cfd-ab5f-963e61c481ce","eventType":"order.created","timestamp":"2026-04-27T08:49:01.360Z","version":"1.0","source":"food-ordering-service","branchId":1,"payload":{"orderId":"ORD-MOGYGX43-EJRH","internalId":122,"tableNumber":"A3","status":"PREPARING","totalAmount":410,"totalItems":3,"itemCount":3,"createdAt":"2026-04-27T08:49:01.347Z","itemDetails":[{"itemId":"ITEM-001","code":"0205","name":"Pad Thai Special","quantity":1,"price":120,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-002","code":"0101","name":"Tom Yum Soup","quantity":1,"price":150,"specialInstructions":"","diningOption":"dine-in"},{"itemId":"ITEM-003","code":"0102","name":"Green Curry","quantity":1,"price":140,"specialInstructions":"","diningOption":"dine-in"}]}}]
+Apr 27, 2026 3:49:05 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] RabbitMQ message received
+Apr 27, 2026 3:49:05 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] ========== RabbitMQ Order Mapping ==========
+  Order ID    : ORD-MOGYGX43-EJRH (ID=122)
+  Branch ID   : 1
+  Table       : A3
+  Status      : PREPARING
+  Total       : 410.00  Items=3  Count=3
+  Created At  : 2026-04-27T08:49:01.347Z
+  Item Details:
+  ITEM-001 | 0205 dine-in | Pad Thai Special x1 @ 120.00
+  ITEM-002 | 0101 dine-in | Tom Yum Soup x1 @ 150.00
+  ITEM-003 | 0102 dine-in | Green Curry x1 @ 140.00
+============================================
+Apr 27, 2026 3:49:27 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] received message = [{"eventId":"19e5c705-f4a0-4023-ba16-648e7566912e","eventType":"order.created","timestamp":"2026-04-27T08:49:27.104Z","version":"1.0","source":"food-ordering-service","branchId":1,"payload":{"orderId":"ORD-MOGYHGZ3-X6XV","internalId":123,"tableNumber":"B1","status":"PREPARING","totalAmount":398,"totalItems":2,"itemCount":1,"createdAt":"2026-04-27T08:49:27.091Z","itemDetails":[{"itemId":"ITEM-006","code":"0106","name":"Grilled Pork Set","quantity":2,"price":199,"specialInstructions":"","diningOption":"dine-in"}]}}]
+Apr 27, 2026 3:49:34 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] RabbitMQ message received
+Apr 27, 2026 3:49:38 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] ========== RabbitMQ Order Mapping ==========
+  Order ID    : ORD-MOGYHGZ3-X6XV (ID=123)
+  Branch ID   : 1
+  Table       : B1
+  Status      : PREPARING
+  Total       : 398.00  Items=2  Count=1
+  Created At  : 2026-04-27T08:49:27.091Z
+  Item Details:
+  ITEM-006 | 0106 dine-in | Grilled Pork Set x2 @ 199.00
+============================================
+Apr 27, 2026 3:50:05 PM com.ics.util.AppLogUtil log
+INFO: [RabbitMQConsumer] received message = [{"eventId":"bf95e255-4935-4a62-8ad0-b4d60932d68b","eventType":"order.created","timestamp":"2026-04-27T08:50:05.149Z","version":"1.0","source":"food-ordering-service","branchId":1,"payload":{"orderId":"ORD-MOGYIAC3-B205","internalId":124,"tableNumber":"A1","status":"PREPARING","totalAmount":210,"totalItems":2,"itemCount":2,"createdAt":"2026-04-27T08:50:05.141Z","itemDetails":[{"itemId":"ITEM-004","code":"3508","name":"Fried Rice","quantity":1,"price":100,"specialInstructions":"ไม่เผ็ด, ไม่ใส่ผัก","diningOption":"dine-in"},{"itemId":"ITEM-005","code":"0105","name":"Basil Chicken Rice","quantity":1,"price":110,"specialInstructions":"ไม่ใส่ผักชี, แยกน้ำจิ้ม","diningOption":"dine-in"}]}}]
+Apr 27, 2026 3:50:36 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] RabbitMQ message received
+Apr 27, 2026 3:50:36 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] ========== RabbitMQ Order Mapping ==========
+  Order ID    : ORD-MOGYIAC3-B205 (ID=124)
+  Branch ID   : 1
+  Table       : A1
+  Status      : PREPARING
+  Total       : 210.00  Items=2  Count=2
+  Created At  : 2026-04-27T08:50:05.141Z
+  Item Details:
+  ITEM-004 | 3508 dine-in | Fried Rice x1 @ 100.00 [ไม่เผ็ด, ไม่ใส่ผัก]
+  ITEM-005 | 0105 dine-in | Basil Chicken Rice x1 @ 110.00 [ไม่ใส่ผักชี, แยกน้ำจิ้ม]
+============================================
+Apr 27, 2026 3:50:37 PM com.ics.util.AppLogUtil log
+INFO: [PrintToKic] DB connected — checking print queue

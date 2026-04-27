@@ -381,32 +381,37 @@ public class PrintToKic extends javax.swing.JFrame {
 
         if (orderBean == null) {
             AppLogUtil.error(PrintToKic.class, "RabbitMQ mapping failed — rawMessage is null or empty");
-            lblProcessShow.setText("[RabbitMQ] Mapping failed: empty message");
+            javax.swing.SwingUtilities.invokeLater(() ->
+                lblProcessShow.setText("[RabbitMQ] Mapping failed: empty message"));
             return;
         }
 
-        // แสดงผลบน UI
-        lblProcessShow.setText(String.format(
+        // UI updates ต้องอยู่บน EDT เสมอ — ไม่ใช่บน RabbitMQ consumer thread
+        final String showText = String.format(
             "[RabbitMQ] โต๊ะ: %s  Order: %s  สถานะ: %s",
             orderBean.getTableNumber(),
             orderBean.getOrderId(),
             orderBean.getStatus()
-        ));
-        
-        lblProcessLog.setText(String.format(
+        );
+        final String logText = String.format(
             "ยอดรวม: %.2f  รายการ: %d  สาขา: %s",
             orderBean.getTotalAmount(),
             orderBean.getItemCount(),
             orderBean.getBranchId()
-        ));
+        );
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            lblProcessShow.setText(showText);
+            lblProcessLog.setText(logText);
+        });
 
         AppLogUtil.info(PrintToKic.class, orderBean.toString());
-        
-        // add balance data
+
+        // บันทึกข้อมูล order ลง DB
         int resultSave = balanceControl.saveFromCloudCustomerOrder(orderBean);
         if (resultSave > 0) {
-            // ดำเนินการพิมพ์ต่อ
-            processTricker();
+            // ส่ง processTricker() ไปรันบน scheduler thread แทนการเรียกตรงๆ บน RabbitMQ thread
+            // เพื่อให้ DeliverCallback return เร็ว → basicAck ถูกเรียกได้ทันที → รับ message ถัดไปได้
+            scheduler.submit(this::processTricker);
         }
     }
 }
